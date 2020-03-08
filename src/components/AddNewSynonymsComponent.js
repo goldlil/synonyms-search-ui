@@ -14,6 +14,8 @@ class AddNewSynonymsComponent extends React.Component {
         }
     }
 
+    formRef = React.createRef();
+
     static getDerivedStateFromProps(nextProps, prevState) {
         return {
             visible: nextProps.visible,
@@ -25,7 +27,6 @@ class AddNewSynonymsComponent extends React.Component {
     splitPattern = /[^\r\n]+/g;
 
     onFinish(values) {
-        console.log(values);       
         let synonymsArray = values.synonyms.match(this.splitPattern);
 
         if (synonymsArray == null || synonymsArray.length === 0)
@@ -34,21 +35,17 @@ class AddNewSynonymsComponent extends React.Component {
         for (let synonym of synonymsArray)
             synonym =synonym.trim();
 
-        console.log(synonymsArray); 
-        
-        console.log(synonymsApi);
-
-        
         synonymsApi.addSynonyms({
             word: values.word,
             synonyms: synonymsArray
         })
         .then(() => {
-            message.success("Synonyms successfully added!");
+            message.success("Synonyms successfully added!", 0.8);
+            this.formRef.current.resetFields();
         })
         .catch((err) => {
             console.error(err);
-            message.error("Unexpected problem occurred during adding synonyms!");
+            message.error("Unexpected problem occurred during adding synonyms!", 0.8);
         });
     }
 
@@ -82,6 +79,7 @@ class AddNewSynonymsComponent extends React.Component {
                             layout="vertical"
                             onFinish={this.onFinish.bind(this)}
                             onFinishFailed={this.onFinishFailed}
+                            ref={this.formRef}
                         >
                             <Form.Item
                                 label="Enter a word:"
